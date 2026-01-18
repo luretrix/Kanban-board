@@ -84,7 +84,7 @@ function Chip({ children, title, tone = "neutral" }) {
 }
 
 // Drag/drop optimization: memoize Card to prevent re-renders
-const Card = memo(function Card({ item, columnId, onDragStart, onRemove, onOpen }) {
+const Card = memo(function Card({ item, columnId, onDragStart, onRemove, onOpen, onDropOnCard }) {
   const ring = PRIORITY_RING[item.priority ?? "medium"];
   const dot = PRIORITY_DOT[item.priority ?? "medium"];
 
@@ -101,6 +101,8 @@ const Card = memo(function Card({ item, columnId, onDragStart, onRemove, onOpen 
     <div
       className={`p-4 mb-3 bg-zinc-700 text-white rounded-lg shadow-md cursor-move transform transition-all duration-200 hover:scale-105 hover:shadow-lg ${ring}`}
       draggable="true"
+      data-card-id={item.id}
+      data-column-id={columnId}
       onDragStart={(e) => {
         // ✅ KRITISK for Tauri/WebView: sett dataTransfer payload
         try {
@@ -110,6 +112,15 @@ const Card = memo(function Card({ item, columnId, onDragStart, onRemove, onOpen 
           // ignore
         }
         onDragStart(columnId, item);
+      }}
+      onDragOver={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      }}
+      onDrop={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onDropOnCard?.(e, columnId, item.id);
       }}
       onClick={() => onOpen(item.id)}
       role="button"

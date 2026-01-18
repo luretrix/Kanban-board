@@ -10,7 +10,7 @@ const Board = memo(function Board({
   onDragStart,
   onRemove,
   onOpen,
-
+  onDropOnCard,
 }) {
   return (
     <div className="flex gap-6 pb-6 w-max">
@@ -25,7 +25,7 @@ const Board = memo(function Board({
           onDragStart={onDragStart}
           onRemove={onRemove}
           onOpen={onOpen}
-
+          onDropOnCard={onDropOnCard}
         />
       ))}
     </div>

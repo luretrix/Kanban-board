@@ -69,7 +69,6 @@ function App() {
       estimate: { value: 3, unit: "d" },
       scheduledStart: null,
       checklist: [],
-      progressPct: 0,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     });
@@ -85,7 +84,6 @@ function App() {
       estimate: { value: 30, unit: "m" },
       scheduledStart: null,
       checklist: [],
-      progressPct: 0,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     });
@@ -101,7 +99,6 @@ function App() {
       estimate: { value: 1, unit: "h" },
       scheduledStart: null,
       checklist: [],
-      progressPct: 0,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     });
@@ -329,12 +326,12 @@ function App() {
     // Alltid nullstill draggedItem
     draggedItemRef.current = null;
 
-    // Samme kolonne - ingenting å gjøre
+    // Samme kolonne - ingenting å gjøre (drop på selve kolonnen)
     if (sourceColumnId === targetColumnId) {
       return;
     }
 
-    // Flytt item til ny kolonne
+    // Flytt item til ny kolonne (legges til slutten)
     setColumns((prevColumns) => ({
       ...prevColumns,
       [sourceColumnId]: {
@@ -346,6 +343,68 @@ function App() {
         items: [...prevColumns[targetColumnId].items, item],
       },
     }));
+  }, []);
+
+  // Handler for drop på et spesifikt kort
+  const handleDropOnCard = useCallback((e, targetColumnId, targetCardId) => {
+    e.preventDefault();
+    const draggedItem = draggedItemRef.current;
+    if (!draggedItem) return;
+
+    const { columnId: sourceColumnId, item } = draggedItem;
+
+    // Nullstill draggedItem
+    draggedItemRef.current = null;
+
+    // Ikke dropp på seg selv
+    if (item.id === targetCardId) {
+      return;
+    }
+
+    setColumns((prevColumns) => {
+      const newColumns = { ...prevColumns };
+
+      // Fjern kortet fra kildekolonnen
+      const sourceItems = newColumns[sourceColumnId].items.filter(
+        (i) => i.id !== item.id
+      );
+
+      // Samme kolonne - re-order
+      if (sourceColumnId === targetColumnId) {
+        const targetIndex = sourceItems.findIndex((i) => i.id === targetCardId);
+
+        // Sett inn før target-kortet
+        const newItems = [...sourceItems];
+        newItems.splice(targetIndex, 0, item);
+
+        return {
+          ...newColumns,
+          [targetColumnId]: {
+            ...newColumns[targetColumnId],
+            items: newItems,
+          },
+        };
+      }
+
+      // Ulike kolonner - flytt kortet
+      const targetItems = [...newColumns[targetColumnId].items];
+      const targetIndex = targetItems.findIndex((i) => i.id === targetCardId);
+
+      // Sett inn før target-kortet
+      targetItems.splice(targetIndex, 0, item);
+
+      return {
+        ...newColumns,
+        [sourceColumnId]: {
+          ...newColumns[sourceColumnId],
+          items: sourceItems,
+        },
+        [targetColumnId]: {
+          ...newColumns[targetColumnId],
+          items: targetItems,
+        },
+      };
+    });
   }, []);
 
   // ----- Tasks CRUD -----
@@ -400,7 +459,6 @@ function App() {
     scheduledStart: null,
     deadline: null,
     checklist: [],
-    progressPct: 0,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   });
@@ -659,6 +717,7 @@ function App() {
       onDragStart={handleDragStart}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
+      onDropOnCard={handleDropOnCard}
       onRemove={removeTask}
       onOpen={openExisting}
     />

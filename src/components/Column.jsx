@@ -11,6 +11,7 @@ const Column = memo(function Column({
   onDragStart,
   onRemove,
   onOpen,
+  onDropOnCard,
 }) {
   return (
     <div
@@ -51,6 +52,7 @@ const Column = memo(function Column({
               onDragStart={onDragStart}
               onRemove={onRemove}
               onOpen={onOpen}
+              onDropOnCard={onDropOnCard}
             />
           ))
         )}

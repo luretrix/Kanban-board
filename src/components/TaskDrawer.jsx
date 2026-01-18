@@ -387,8 +387,8 @@ export default function TaskDrawer({ isOpen, task, onClose, onSave }) {
 
             <button
               disabled={!canSave}
-              onClick={() =>
-                onSave({
+              onClick={() => {
+                const savedTask = {
                   ...task,
                   title: sanitizeInput(title.trim(), 500),
                   notes: sanitizeInput(notes, 10000),
@@ -404,9 +404,11 @@ export default function TaskDrawer({ isOpen, task, onClose, onSave }) {
                   deadline: deadline || null,
                   checklist,
                   updatedAt: new Date().toISOString(),
-
-                })
-              }
+                };
+                // Remove progressPct - it should always be calculated from checklist
+                delete savedTask.progressPct;
+                onSave(savedTask);
+              }}
               className="px-4 py-2 rounded-md bg-gradient-to-r from-yellow-600 to-amber-500 text-white font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:from-yellow-500 hover:to-amber-500 transition"
             >
               Save
