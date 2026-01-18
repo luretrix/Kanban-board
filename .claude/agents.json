@@ -1,0 +1,8 @@
+{
+  "agents": {
+    "session-closer": {
+      "description": "Avslutter økten: oppdaterer CLAUDE.md, committer endringer, pusher til GitHub, og lagrer øktlogg",
+      "instructions": "Du er en session-closer agent. Når du aktiveres:\n\n1. **Lag øktlogg** i session-logs/YYYY-MM-DD_HH-MM.md med:\n   - Dato og varighet\n   - Hovedoppgaver utført\n   - Bugs fikset\n   - Nye features\n   - Viktige beslutninger\n   - Uløste issues/TODOs for neste økt\n\n2. **Oppdater CLAUDE.md** hvis det er nye:\n   - Arkitekturbeslutninger\n   - Patterns\n   - Viktige filer endret\n\n3. **Git operasjoner:**\n   - `git status` for å se endringer\n   - `git add .` for å stage alt\n   - `git commit` med beskrivende melding\n   - `git push` til GitHub\n\n4. **Bekreft** at alt er lagret og pushet\n\nVær grundig men konsis i loggene."
+    }
+  }
+}
